@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Persoana
 {
-    public string Nume { get; set; }
+    public string Nume { get; }
     private List<Task> taskuri;
 
     public Persoana(string nume)
@@ -12,33 +13,22 @@ public class Persoana
         taskuri = new List<Task>();
     }
 
-    public void AdaugaTask(string descriereTask)
+    public void AdaugaTask(Task task)
     {
-        Task task = new Task(descriereTask);
         taskuri.Add(task);
     }
 
     public void MarcheazaTaskFinalizat(string descriereTask)
     {
-        Task task = taskuri.Find(t => t.Descriere.Equals(descriereTask, StringComparison.OrdinalIgnoreCase));
+        var task = taskuri.FirstOrDefault(t => t.Descriere.Equals(descriereTask, StringComparison.OrdinalIgnoreCase));
         if (task != null)
         {
-            task.Stare = TaskStare.Finalizat;
+            task.EsteFinalizat = true;
         }
     }
 
-    public void AfiseazaTaskuri()
+    public List<Task> GetTaskuri()
     {
-        Console.WriteLine($"Taskuri pentru {Nume}:");
-        foreach (var task in taskuri)
-        {
-            Console.WriteLine($"{task.Descriere} - {task.Stare}");
-        }
-    }
-
-    public override string ToString()
-    {
-        string taskuriString = string.Join(";", taskuri);
-        return $"{Nume} | {taskuriString}";
+        return taskuri;
     }
 }

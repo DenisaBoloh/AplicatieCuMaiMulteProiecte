@@ -4,75 +4,56 @@ class Program
 {
     static void Main(string[] args)
     {
-        string numeFisier = "persoane.txt";
-        AdministratorClienti adminClienti = new AdministratorClienti(numeFisier);
+        var adminClienti = new AdministrareClienti();
+        var adminTaskuri = new AdministrareTaskuri(adminClienti);
 
-        bool running = true;
-        while (running)
+        while (true)
         {
-            Console.WriteLine("Meniu:");
-            Console.WriteLine("1. Adauga o persoana");
-            Console.WriteLine("2. Cauta o persoana");
-            Console.WriteLine("3. Adauga un task");
-            Console.WriteLine("4. Marcheaza task ca finalizat");
-            Console.WriteLine("5. Afiseaza taskuri");
-            Console.WriteLine("6. Iesire");
-            Console.Write("Alege o optiune: ");
-            int optiune = int.Parse(Console.ReadLine());
+            Console.WriteLine("\nMeniu Principal:");
+            Console.WriteLine("1. Adauga persoana");
+            Console.WriteLine("2. Adauga task");
+            Console.WriteLine("3. Marcheaza task ca finalizat");
+            Console.WriteLine("4. Afiseaza taskurile unei persoane");
+            Console.WriteLine("5. Iesire");
+            Console.Write("Alegeti o optiune: ");
+
+            var optiune = Console.ReadLine();
 
             switch (optiune)
             {
-                case 1:
+                case "1":
                     Console.Write("Introduceti numele persoanei: ");
-                    string numePersoana = Console.ReadLine();
+                    var numePersoana = Console.ReadLine();
                     adminClienti.AdaugaPersoana(numePersoana);
-                    Console.WriteLine("Persoana a fost adaugata!");
                     break;
 
-                case 2:
-                    Console.Write("Introduceti numele persoanei de cautat: ");
-                    string numeDeCautat = Console.ReadLine();
-                    var persoanaGasita = adminClienti.CautaPersoana(numeDeCautat);
-                    if (persoanaGasita != null)
-                    {
-                        Console.WriteLine($"Persoana gasita: {persoanaGasita.Nume}");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Persoana nu a fost gasita.");
-                    }
-                    break;
-
-                case 3:
+                case "2":
                     Console.Write("Introduceti numele persoanei: ");
-                    string numeTaskPersoana = Console.ReadLine();
-                    Console.Write("Introduceti task-ul: ");
-                    string task = Console.ReadLine();
-                    adminClienti.AdaugaTask(numeTaskPersoana, task);
-                    Console.WriteLine("Task-ul a fost adaugat!");
+                    var numePentruTask = Console.ReadLine();
+                    Console.Write("Introduceti descrierea taskului: ");
+                    var descriereTask = Console.ReadLine();
+                    adminTaskuri.AdaugaTask(numePentruTask, descriereTask);
                     break;
 
-                case 4:
+                case "3":
                     Console.Write("Introduceti numele persoanei: ");
-                    string numePersoanaFinalizare = Console.ReadLine();
-                    Console.Write("Introduceti task-ul de marcat ca finalizat: ");
-                    string taskFinalizat = Console.ReadLine();
-                    adminClienti.MarcheazaTaskCaFinalizat(numePersoanaFinalizare, taskFinalizat);
-                    Console.WriteLine("Task-ul a fost marcat ca finalizat!");
+                    var numePentruFinalizare = Console.ReadLine();
+                    Console.Write("Introduceti descrierea taskului de marcat: ");
+                    var taskDeFinalizat = Console.ReadLine();
+                    adminTaskuri.MarcheazaTaskCaFinalizat(numePentruFinalizare, taskDeFinalizat);
                     break;
 
-                case 5:
-                    Console.Write("Introduceti numele persoanei pentru a afisa taskurile: ");
-                    string numeAfisare = Console.ReadLine();
-                    adminClienti.AfiseazaTaskuri(numeAfisare);
+                case "4":
+                    Console.Write("Introduceti numele persoanei: ");
+                    var numePentruAfisare = Console.ReadLine();
+                    adminTaskuri.AfiseazaTaskuri(numePentruAfisare);
                     break;
 
-                case 6:
-                    running = false;
-                    break;
+                case "5":
+                    return;
 
                 default:
-                    Console.WriteLine("Optiune invalida.");
+                    Console.WriteLine("Optiune invalida!");
                     break;
             }
         }

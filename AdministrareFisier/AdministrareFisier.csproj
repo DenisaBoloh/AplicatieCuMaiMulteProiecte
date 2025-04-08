@@ -41,7 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdministrarePersoane.cs" />
     <Compile Include="AdministrareTaskuri.cs" />
     <Compile Include="AdministratorClienti.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
