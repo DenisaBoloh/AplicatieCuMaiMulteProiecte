@@ -1,11 +1,14 @@
-﻿public class Task
+﻿namespace LibrarieModele
 {
-    public string Descriere { get; }
-    public bool EsteFinalizat { get; set; }
-
-    public Task(string descriere)
+    public class Task
     {
-        Descriere = descriere;
-        EsteFinalizat = false;
+        public string Descriere { get; }
+        public bool EsteFinalizat { get; set; }
+
+        public Task(string descriere)
+        {
+            Descriere = descriere;
+            EsteFinalizat = false;
+        }
     }
 }

@@ -1,81 +1,104 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-
-public class AdministrareTaskuri
+﻿namespace AdministrareFisier
 {
-    private const string numeFisierTaskuri = "taskuri.txt";
-    private AdministrareClienti adminClienti;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using LibrarieModele;
+    
 
-    public AdministrareTaskuri(AdministrareClienti adminClienti)
+    public class AdministrareTaskuri
     {
-        this.adminClienti = adminClienti;
-        IncarcaTaskuri();
-    }
+        private const string numeFisierTaskuri = @"..\..\..\AplicatieCuMaiMulteProiecte\bin\Debug\taskuri.txt";
+        private AdministrareClienti adminClienti;
 
-    public void AdaugaTask(string numePersoana, string descriereTask)
-    {
-        var persoana = adminClienti.CautaPersoana(numePersoana);
-        if (persoana != null)
+        public AdministrareTaskuri(AdministrareClienti adminClienti)
         {
-            persoana.AdaugaTask(new Task(descriereTask));
-            SalveazaTaskuri();
+            this.adminClienti = adminClienti;
+            IncarcaTaskuri();
         }
-    }
 
-    public void MarcheazaTaskCaFinalizat(string numePersoana, string descriereTask)
-    {
-        var persoana = adminClienti.CautaPersoana(numePersoana);
-        if (persoana != null)
+        public void AdaugaTask(string numePersoana, string descriereTask)
         {
-            persoana.MarcheazaTaskFinalizat(descriereTask);
-            SalveazaTaskuri();
-        }
-    }
-
-    public void AfiseazaTaskuri(string numePersoana)
-    {
-        var persoana = adminClienti.CautaPersoana(numePersoana);
-        if (persoana != null)
-        {
-            foreach (var task in persoana.GetTaskuri())
+            var persoana = adminClienti.CautaPersoana(numePersoana);
+            if (persoana != null)
             {
-                Console.WriteLine($"- {task.Descriere} [{(task.EsteFinalizat ? "X" : " ")}]");
+                persoana.AdaugaTask(new Task(descriereTask));
+                SalveazaTaskuri();
             }
         }
-    }
 
-    private void IncarcaTaskuri()
-    {
-        if (File.Exists(numeFisierTaskuri))
+        public void MarcheazaTaskCaFinalizat(string numePersoana, string descriereTask)
         {
-            foreach (var line in File.ReadAllLines(numeFisierTaskuri))
+            var persoana = adminClienti.CautaPersoana(numePersoana);
+            if (persoana != null)
             {
-                var parts = line.Split('|');
-                if (parts.Length == 3)
+                persoana.MarcheazaTaskFinalizat(descriereTask);
+                SalveazaTaskuri();
+            }
+        }
+
+        public void AfiseazaTaskuri(string numePersoana)
+        {
+            var persoana = adminClienti.CautaPersoana(numePersoana);
+            if (persoana != null)
+            {
+                foreach (var task in persoana.GetTaskuri())
                 {
-                    var persoana = adminClienti.CautaPersoana(parts[0]);
-                    if (persoana != null)
-                    {
-                        var task = new Task(parts[1]);
-                        task.EsteFinalizat = bool.Parse(parts[2]);
-                        persoana.AdaugaTask(task);
-                    }
+                    Console.WriteLine($"- {task.Descriere} [{(task.EsteFinalizat ? "X" : " ")}]");
                 }
             }
         }
-    }
 
-    private void SalveazaTaskuri()
-    {
-        var taskLines = new List<string>();
-        foreach (var persoana in adminClienti.GetPersoane())
+        private void IncarcaTaskuri()
         {
-            foreach (var task in persoana.GetTaskuri())
+            if (File.Exists(numeFisierTaskuri))
             {
-                taskLines.Add($"{persoana.Nume}|{task.Descriere}|{task.EsteFinalizat}");
+                try
+                {
+                    foreach (var line in File.ReadAllLines(numeFisierTaskuri))
+                    {
+                        var parts = line.Split('|');
+                        if (parts.Length == 3)
+                        {
+                            var persoana = adminClienti.CautaPersoana(parts[0]);
+                            if (persoana != null)
+                            {
+                                var task = new Task(parts[1])
+                                {
+                                    EsteFinalizat = bool.Parse(parts[2])
+                                };
+                                persoana.AdaugaTask(task);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Invalid line format in {numeFisierTaskuri}: {line}");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error reading {numeFisierTaskuri}: {ex.Message}");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"File {numeFisierTaskuri} not found.");
             }
         }
-        File.WriteAllLines(numeFisierTaskuri, taskLines);
+
+
+        private void SalveazaTaskuri()
+        {
+            var taskLines = new List<string>();
+            foreach (var persoana in adminClienti.GetPersoane())
+            {
+                foreach (var task in persoana.GetTaskuri())
+                {
+                    taskLines.Add($"{persoana.Nume}|{task.Descriere}|{task.EsteFinalizat}");
+                }
+            }
+            File.WriteAllLines(numeFisierTaskuri, taskLines);
+        }
     }
 }
