@@ -26,64 +26,65 @@ namespace TaskManagerUI
             this.Size = new Size(900, 600);
             this.StartPosition = FormStartPosition.CenterScreen;
 
-            // Main Panel
+            
             Panel mainPanel = new Panel();
             mainPanel.Dock = DockStyle.Fill;
             mainPanel.BackColor = Color.WhiteSmoke;
             mainPanel.Padding = new Padding(20);
             this.Controls.Add(mainPanel);
 
-            // Header
+            
             Label headerLabel = new Label();
             headerLabel.Text = "Task Manager Dashboard";
             headerLabel.Font = new Font("Arial", 16, FontStyle.Bold);
             headerLabel.AutoSize = true;
+            headerLabel.Location = new Point(20, 20);
             mainPanel.Controls.Add(headerLabel);
 
-            // Quick Actions Panel
+            
             Panel quickActionsPanel = new Panel();
-            quickActionsPanel.Dock = DockStyle.Top;
-            quickActionsPanel.Height = 80;
             quickActionsPanel.BackColor = Color.LightGray;
             quickActionsPanel.Padding = new Padding(10);
+            quickActionsPanel.Location = new Point(20, 60); 
+            quickActionsPanel.Size = new Size(mainPanel.Width - 40, 60); 
             mainPanel.Controls.Add(quickActionsPanel);
 
-            // Add Person Button
+            
             Button addPersonButton = new Button();
             addPersonButton.Text = "Add Person";
             addPersonButton.Size = new Size(120, 40);
-            addPersonButton.Location = new Point(10, 20);
+            addPersonButton.Location = new Point(10, 10);
             addPersonButton.Click += (sender, e) => ShowAddPersonDialog();
             quickActionsPanel.Controls.Add(addPersonButton);
 
-            // Add Task Button
+            
             Button addTaskButton = new Button();
             addTaskButton.Text = "Add Task";
             addTaskButton.Size = new Size(120, 40);
-            addTaskButton.Location = new Point(140, 20);
+            addTaskButton.Location = new Point(140, 10);
             addTaskButton.Click += (sender, e) => ShowAddTaskDialog();
             quickActionsPanel.Controls.Add(addTaskButton);
 
-            // Tasks DataGridView
+            
             tasksDataGridView = new DataGridView();
-            tasksDataGridView.Dock = DockStyle.Fill;
-            tasksDataGridView.Margin = new Padding(0, 90, 0, 0);
+            tasksDataGridView.Location = new Point(20, 130); 
+            tasksDataGridView.Size = new Size(mainPanel.Width - 40, mainPanel.Height - 150);
             tasksDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             tasksDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             tasksDataGridView.RowHeadersVisible = false;
             tasksDataGridView.AllowUserToAddRows = false;
             tasksDataGridView.BackgroundColor = Color.White;
 
-            // Add columns
+            
             tasksDataGridView.Columns.Add("Person", "Person");
             tasksDataGridView.Columns.Add("Task", "Task Description");
             tasksDataGridView.Columns.Add("Status", "Status");
 
-            // Status column styling
+            
             tasksDataGridView.Columns["Status"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             tasksDataGridView.Columns["Status"].Width = 100;
 
-            // Mark complete button column
+            
             DataGridViewButtonColumn completeButtonColumn = new DataGridViewButtonColumn();
             completeButtonColumn.Name = "Complete";
             completeButtonColumn.Text = "Mark Complete";
@@ -93,7 +94,7 @@ namespace TaskManagerUI
             tasksDataGridView.CellContentClick += TasksDataGridView_CellContentClick;
             mainPanel.Controls.Add(tasksDataGridView);
 
-            // Load data
+            
             RefreshTasksGrid();
         }
 
@@ -107,10 +108,10 @@ namespace TaskManagerUI
             TextBox nameTextBox = new TextBox();
             nameTextBox.Width = 200;
             nameTextBox.Location = new Point(50, 30);
-            nameTextBox.Text = "Enter person name..."; // Placeholder-like behavior
+            nameTextBox.Text = "Enter person name..."; 
             nameTextBox.ForeColor = Color.Gray;
 
-            // Add placeholder behavior
+            
             nameTextBox.GotFocus += (sender, e) =>
             {
                 if (nameTextBox.Text == "Enter person name...")
@@ -155,7 +156,7 @@ namespace TaskManagerUI
             dialog.Size = new Size(300, 200);
             dialog.StartPosition = FormStartPosition.CenterParent;
 
-            // Person ComboBox
+            
             ComboBox personComboBox = new ComboBox();
             personComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             personComboBox.Width = 200;
@@ -170,12 +171,12 @@ namespace TaskManagerUI
             }
             dialog.Controls.Add(personComboBox);
 
-            // Task Description
+           
             TextBox taskTextBox = new TextBox();
-            taskTextBox.Text = "Enter task description..."; // Placeholder-like behavior
+            taskTextBox.Text = "Enter task description..."; 
             taskTextBox.ForeColor = Color.Gray;
 
-            // Add placeholder behavior:
+            
             taskTextBox.GotFocus += (sender, e) =>
             {
                 if (taskTextBox.Text == "Enter task description...")
@@ -195,11 +196,11 @@ namespace TaskManagerUI
             };
 
 
-            // With this workaround:
-            taskTextBox.Text = "Enter task description..."; // Placeholder-like behavior
+            
+            taskTextBox.Text = "Enter task description..."; 
             taskTextBox.ForeColor = Color.Gray;
 
-            // Add placeholder behavior:
+            
             taskTextBox.GotFocus += (sender, e) =>
             {
                 if (taskTextBox.Text == "Enter task description...")
@@ -259,15 +260,15 @@ namespace TaskManagerUI
                     tasksDataGridView.Rows.Add(
                         person.Nume,
                         task.Descriere,
-                        task.EsteFinalizat ? "Completed" : "Pending"
+                        task.EsteFinalizat ? "Completat" : "In Asteptare"
                     );
                 }
             }
 
-            // Update complete button visibility
+            
             foreach (DataGridViewRow row in tasksDataGridView.Rows)
             {
-                if (row.Cells["Status"].Value.ToString() == "Completed")
+                if (row.Cells["Status"].Value.ToString() == "Completat")
                 {
                     row.Cells["Complete"].Value = "Done";
                     row.Cells["Complete"].ReadOnly = true;
