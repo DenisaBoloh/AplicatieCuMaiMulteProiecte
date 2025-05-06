@@ -58,21 +58,19 @@
                     foreach (var line in File.ReadAllLines(numeFisierTaskuri))
                     {
                         var parts = line.Split('|');
-                        if (parts.Length == 3)
+                        if (parts.Length >= 3) 
                         {
                             var persoana = adminClienti.CautaPersoana(parts[0]);
                             if (persoana != null)
                             {
                                 var task = new Task(parts[1])
                                 {
-                                    EsteFinalizat = bool.Parse(parts[2])
+                                    EsteFinalizat = bool.Parse(parts[2]),
+                                    Priority = parts.Length > 3 ? parts[3] : "Medium", 
+                                    IsImportant = parts.Length > 4 ? bool.Parse(parts[4]) : false 
                                 };
                                 persoana.AdaugaTask(task);
                             }
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Invalid line format in {numeFisierTaskuri}: {line}");
                         }
                     }
                 }
@@ -81,21 +79,17 @@
                     Console.WriteLine($"Error reading {numeFisierTaskuri}: {ex.Message}");
                 }
             }
-            else
-            {
-                Console.WriteLine($"File {numeFisierTaskuri} not found.");
-            }
         }
 
 
-        private void SalveazaTaskuri()
+        public void SalveazaTaskuri()
         {
             var taskLines = new List<string>();
             foreach (var persoana in adminClienti.GetPersoane())
             {
                 foreach (var task in persoana.GetTaskuri())
                 {
-                    taskLines.Add($"{persoana.Nume}|{task.Descriere}|{task.EsteFinalizat}");
+                    taskLines.Add($"{persoana.Nume}|{task.Descriere}|{task.EsteFinalizat}|{task.Priority}|{task.IsImportant}");
                 }
             }
             File.WriteAllLines(numeFisierTaskuri, taskLines);

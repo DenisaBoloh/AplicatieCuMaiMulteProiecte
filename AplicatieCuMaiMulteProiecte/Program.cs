@@ -1,6 +1,7 @@
 ﻿using System;
 using AdministrareFisier;
 
+
 class Program
 {
     static void Main(string[] args)
