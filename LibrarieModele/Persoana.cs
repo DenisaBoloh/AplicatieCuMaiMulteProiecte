@@ -29,6 +29,17 @@
             }
         }
 
+        public bool StergeTask(string descriereTask)
+        {
+            var task = taskuri.FirstOrDefault(t => t.Descriere.Equals(descriereTask, StringComparison.OrdinalIgnoreCase));
+            if (task != null)
+            {
+                taskuri.Remove(task);
+                return true;
+            }
+            return false;
+        }
+
         public List<Task> GetTaskuri()
         {
             return taskuri;

@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using AdministrareFisier;
 using LibrarieModele;
 using System.Drawing.Drawing2D;
+using System.Linq;
 
 namespace TaskManagerUI
 {
@@ -35,12 +36,11 @@ namespace TaskManagerUI
         private void InitializeDashboardUI()
         {
             this.Text = "Task Manager";
-            this.Size = new Size(1100, 700); 
+            this.Size = new Size(1100, 700);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = lightBgColor;
             this.Font = new Font("Segoe UI", 9);
 
-            
             Panel mainPanel = new Panel();
             mainPanel.Dock = DockStyle.Fill;
             mainPanel.BackColor = lightBgColor;
@@ -130,7 +130,6 @@ namespace TaskManagerUI
             btnReset.Click += BtnReset_Click;
             searchPanel.Controls.Add(btnReset);
 
-            
             tasksDataGridView = new DataGridView();
             tasksDataGridView.Location = new Point(25, 210);
             tasksDataGridView.Size = new Size(mainPanel.Width - 50, mainPanel.Height - 240);
@@ -156,7 +155,6 @@ namespace TaskManagerUI
             tasksDataGridView.Columns.Add("Important", "IMPORTANT");
             tasksDataGridView.Columns.Add("Status", "STATUS");
 
-            
             tasksDataGridView.Columns["Person"].Width = 150;
             tasksDataGridView.Columns["Priority"].Width = 100;
             tasksDataGridView.Columns["Important"].Width = 80;
@@ -173,6 +171,15 @@ namespace TaskManagerUI
             completeButtonColumn.DefaultCellStyle.ForeColor = Color.White;
             completeButtonColumn.DefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
             tasksDataGridView.Columns.Add(completeButtonColumn);
+
+            DataGridViewButtonColumn editButtonColumn = new DataGridViewButtonColumn();
+            editButtonColumn.Name = "Edit";
+            editButtonColumn.Text = "Edit";
+            editButtonColumn.UseColumnTextForButtonValue = true;
+            editButtonColumn.DefaultCellStyle.BackColor = Color.FromArgb(91, 155, 213);
+            editButtonColumn.DefaultCellStyle.ForeColor = Color.White;
+            editButtonColumn.DefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            tasksDataGridView.Columns.Add(editButtonColumn);
 
             tasksDataGridView.CellContentClick += TasksDataGridView_CellContentClick;
             mainPanel.Controls.Add(tasksDataGridView);
@@ -192,7 +199,6 @@ namespace TaskManagerUI
             dialog.BackColor = lightBgColor;
             dialog.Padding = new Padding(20);
 
-            
             Label personLabel = new Label();
             personLabel.Text = "Select Person:";
             personLabel.Location = new Point(30, 20);
@@ -214,7 +220,6 @@ namespace TaskManagerUI
             }
             dialog.Controls.Add(personComboBox);
 
-            
             Label taskLabel = new Label();
             taskLabel.Text = "Task Description:";
             taskLabel.Location = new Point(30, 85);
@@ -245,24 +250,23 @@ namespace TaskManagerUI
                 }
             };
             dialog.Controls.Add(taskTextBox);
-            
+
             Label priorityLabel = new Label();
             priorityLabel.Text = "Priority:";
             priorityLabel.Location = new Point(30, 150);
             priorityLabel.Font = new Font("Segoe UI", 10);
             dialog.Controls.Add(priorityLabel);
 
-            
             RadioButton rbHigh = new RadioButton();
             rbHigh.Text = "High";
             rbHigh.Location = new Point(30, 175);
             rbHigh.Font = new Font("Segoe UI", 9);
-            rbHigh.AutoSize = true;  
+            rbHigh.AutoSize = true;
             dialog.Controls.Add(rbHigh);
 
             RadioButton rbMedium = new RadioButton();
             rbMedium.Text = "Medium";
-            rbMedium.Location = new Point(rbHigh.Right + 20, 175); 
+            rbMedium.Location = new Point(rbHigh.Right + 20, 175);
             rbMedium.Font = new Font("Segoe UI", 9);
             rbMedium.AutoSize = true;
             rbMedium.Checked = true;
@@ -270,19 +274,18 @@ namespace TaskManagerUI
 
             RadioButton rbLow = new RadioButton();
             rbLow.Text = "Low";
-            rbLow.Location = new Point(rbMedium.Right + 20, 175); 
+            rbLow.Location = new Point(rbMedium.Right + 20, 175);
             rbLow.Font = new Font("Segoe UI", 9);
             rbLow.AutoSize = true;
             dialog.Controls.Add(rbLow);
 
-            
             CheckBox chkImportant = new CheckBox();
             chkImportant.Text = "Important Task";
-            chkImportant.Location = new Point(30, 205); 
+            chkImportant.Location = new Point(30, 205);
             chkImportant.Font = new Font("Segoe UI", 9);
             chkImportant.AutoSize = true;
             dialog.Controls.Add(chkImportant);
-            
+
             Button addButton = new Button();
             addButton.Text = "Add Task";
             addButton.Size = new Size(120, 35);
@@ -316,6 +319,151 @@ namespace TaskManagerUI
             dialog.ShowDialog(this);
         }
 
+        private void ShowEditTaskDialog(string personName, string taskDescription)
+        {
+            var person = adminClienti.CautaPersoana(personName);
+            var task = person.GetTaskuri().FirstOrDefault(t => t.Descriere == taskDescription);
+            if (task == null) return;
+
+            Form dialog = new Form();
+            dialog.Text = "Edit Task";
+            dialog.Size = new Size(400, 420);
+            dialog.StartPosition = FormStartPosition.CenterParent;
+            dialog.FormBorderStyle = FormBorderStyle.FixedDialog;
+            dialog.MaximizeBox = false;
+            dialog.MinimizeBox = false;
+            dialog.BackColor = lightBgColor;
+            dialog.Padding = new Padding(20);
+
+            
+            Label personLabel = new Label();
+            personLabel.Text = "Person:";
+            personLabel.Location = new Point(30, 20);
+            personLabel.Font = new Font("Segoe UI", 10);
+            dialog.Controls.Add(personLabel);
+
+            TextBox personTextBox = new TextBox();
+            personTextBox.Text = personName;
+            personTextBox.Width = 300;
+            personTextBox.Location = new Point(30, 45);
+            personTextBox.Font = new Font("Segoe UI", 10);
+            personTextBox.ReadOnly = true;
+            personTextBox.BackColor = Color.WhiteSmoke;
+            dialog.Controls.Add(personTextBox);
+
+            
+            Label taskLabel = new Label();
+            taskLabel.Text = "Task Description:";
+            taskLabel.Location = new Point(30, 85);
+            taskLabel.Font = new Font("Segoe UI", 10);
+            dialog.Controls.Add(taskLabel);
+
+            TextBox taskTextBox = new TextBox();
+            taskTextBox.Text = task.Descriere;
+            taskTextBox.Width = 300;
+            taskTextBox.Location = new Point(30, 110);
+            taskTextBox.Font = new Font("Segoe UI", 10);
+            taskTextBox.BorderStyle = BorderStyle.FixedSingle;
+            dialog.Controls.Add(taskTextBox);
+
+            
+            Label priorityLabel = new Label();
+            priorityLabel.Text = "Priority:";
+            priorityLabel.Location = new Point(30, 150);
+            priorityLabel.Font = new Font("Segoe UI", 10);
+            dialog.Controls.Add(priorityLabel);
+
+            RadioButton rbHigh = new RadioButton();
+            rbHigh.Text = "High";
+            rbHigh.Location = new Point(30, 175);
+            rbHigh.Font = new Font("Segoe UI", 9);
+            rbHigh.AutoSize = true;
+            rbHigh.Checked = task.Priority == "High";
+            dialog.Controls.Add(rbHigh);
+
+            RadioButton rbMedium = new RadioButton();
+            rbMedium.Text = "Medium";
+            rbMedium.Location = new Point(rbHigh.Right + 20, 175);
+            rbMedium.Font = new Font("Segoe UI", 9);
+            rbMedium.AutoSize = true;
+            rbMedium.Checked = task.Priority == "Medium";
+            dialog.Controls.Add(rbMedium);
+
+            RadioButton rbLow = new RadioButton();
+            rbLow.Text = "Low";
+            rbLow.Location = new Point(rbMedium.Right + 20, 175);
+            rbLow.Font = new Font("Segoe UI", 9);
+            rbLow.AutoSize = true;
+            rbLow.Checked = task.Priority == "Low";
+            dialog.Controls.Add(rbLow);
+
+            
+            CheckBox chkImportant = new CheckBox();
+            chkImportant.Text = "Important Task";
+            chkImportant.Location = new Point(30, 205);
+            chkImportant.Font = new Font("Segoe UI", 9);
+            chkImportant.AutoSize = true;
+            chkImportant.Checked = task.IsImportant;
+            dialog.Controls.Add(chkImportant);
+
+            
+            CheckBox chkCompleted = new CheckBox();
+            chkCompleted.Text = "Completed";
+            chkCompleted.Location = new Point(30, 235);
+            chkCompleted.Font = new Font("Segoe UI", 9);
+            chkCompleted.AutoSize = true;
+            chkCompleted.Checked = task.EsteFinalizat;
+            dialog.Controls.Add(chkCompleted);
+
+            
+            Button updateButton = new Button();
+            updateButton.Text = "Update Task";
+            updateButton.Size = new Size(120, 35);
+            updateButton.Location = new Point(210, 280);
+            StyleButton(updateButton, secondaryColor);
+            updateButton.Click += (sender, e) =>
+            {
+                if (!string.IsNullOrWhiteSpace(taskTextBox.Text))
+                {
+                    
+                    task.Descriere = taskTextBox.Text.Trim();
+                    task.Priority = rbHigh.Checked ? "High" : rbMedium.Checked ? "Medium" : "Low";
+                    task.IsImportant = chkImportant.Checked;
+                    task.EsteFinalizat = chkCompleted.Checked;
+
+                    adminTaskuri.SalveazaTaskuri();
+                    dialog.Close();
+                    RefreshTasksGrid();
+                }
+                else
+                {
+                    MessageBox.Show("Please enter a task description!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            };
+            dialog.Controls.Add(updateButton);
+
+            
+            Button deleteButton = new Button();
+            deleteButton.Text = "Delete Task";
+            deleteButton.Size = new Size(120, 35);
+            deleteButton.Location = new Point(80, 280);
+            StyleButton(deleteButton, Color.FromArgb(217, 83, 79));
+            deleteButton.Click += (sender, e) =>
+            {
+                if (MessageBox.Show("Are you sure you want to delete this task?", "Confirm Delete",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+                    person.StergeTask(task.Descriere); 
+                    dialog.Close();
+                    RefreshTasksGrid();
+                }
+            };
+
+            dialog.Controls.Add(deleteButton);
+
+            dialog.ShowDialog(this);
+        }
+
         private void RefreshTasksGrid()
         {
             tasksDataGridView.Rows.Clear();
@@ -331,7 +479,6 @@ namespace TaskManagerUI
                         task.EsteFinalizat ? "Completed" : "Pending"
                     );
 
-                    
                     DataGridViewRow row = tasksDataGridView.Rows[tasksDataGridView.Rows.Count - 1];
                     if (task.Priority == "High")
                         row.DefaultCellStyle.BackColor = highPriorityColor;
@@ -343,7 +490,6 @@ namespace TaskManagerUI
             }
             HighlightCompletedTasks();
         }
-
 
         private void StyleButton(Button button, Color bgColor)
         {
@@ -476,12 +622,20 @@ namespace TaskManagerUI
 
         private void TasksDataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == tasksDataGridView.Columns["Complete"].Index && e.RowIndex >= 0)
+            if (e.RowIndex < 0) return;
+
+            if (e.ColumnIndex == tasksDataGridView.Columns["Complete"].Index)
             {
                 string personName = tasksDataGridView.Rows[e.RowIndex].Cells["Person"].Value.ToString();
                 string taskDesc = tasksDataGridView.Rows[e.RowIndex].Cells["Task"].Value.ToString();
                 adminTaskuri.MarcheazaTaskCaFinalizat(personName, taskDesc);
                 RefreshTasksGrid();
+            }
+            else if (e.ColumnIndex == tasksDataGridView.Columns["Edit"].Index)
+            {
+                string personName = tasksDataGridView.Rows[e.RowIndex].Cells["Person"].Value.ToString();
+                string taskDesc = tasksDataGridView.Rows[e.RowIndex].Cells["Task"].Value.ToString();
+                ShowEditTaskDialog(personName, taskDesc);
             }
         }
 
@@ -496,11 +650,13 @@ namespace TaskManagerUI
                     row.DefaultCellStyle.BackColor = Color.FromArgb(223, 240, 223);
                     row.Cells["Complete"].Style.BackColor = successColor;
                     row.Cells["Complete"].Style.ForeColor = Color.White;
+                    row.Cells["Edit"].Style.BackColor = Color.FromArgb(191, 191, 191);
                 }
                 else
                 {
                     row.Cells["Complete"].Style.BackColor = primaryColor;
                     row.Cells["Complete"].Style.ForeColor = Color.White;
+                    row.Cells["Edit"].Style.BackColor = Color.FromArgb(91, 155, 213);
                 }
             }
         }

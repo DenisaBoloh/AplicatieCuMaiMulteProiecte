@@ -33,6 +33,7 @@
             return persoane;
         }
 
+
         private void IncarcaPersoane()
         {
             if (File.Exists(numeFisierPersoane))
