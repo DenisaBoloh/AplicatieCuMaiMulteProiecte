@@ -15,6 +15,7 @@ namespace TaskManagerUI
         private DataGridView tasksDataGridView;
         private TextBox txtSearch;
         private Button btnReset;
+        private Panel welcomePanel;
 
         private readonly Color primaryColor = Color.FromArgb(68, 114, 196);
         private readonly Color secondaryColor = Color.FromArgb(237, 125, 49);
@@ -30,14 +31,85 @@ namespace TaskManagerUI
             InitializeComponent();
             adminClienti = new AdministrareClienti();
             adminTaskuri = new AdministrareTaskuri(adminClienti);
-            InitializeDashboardUI();
+            InitializeWelcomeScreen();
         }
 
-        private void InitializeDashboardUI()
+        private void InitializeWelcomeScreen()
         {
             this.Text = "Task Manager";
             this.Size = new Size(1100, 700);
             this.StartPosition = FormStartPosition.CenterScreen;
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+
+            
+            welcomePanel = new Panel();
+            welcomePanel.Dock = DockStyle.Fill;
+            welcomePanel.BackColor = primaryColor;
+            this.Controls.Add(welcomePanel);
+
+            // Welcome label
+            Label welcomeLabel = new Label();
+            welcomeLabel.Text = "WELCOME TO TASK MANAGER";
+            welcomeLabel.Font = new Font("Segoe UI", 24, FontStyle.Bold);
+            welcomeLabel.ForeColor = Color.White;
+            welcomeLabel.AutoSize = true;
+            welcomeLabel.Location = new Point(
+                (this.Width - welcomeLabel.Width) / 2,
+                this.Height / 3);
+            welcomePanel.Controls.Add(welcomeLabel);
+            welcomeLabel.Location = new Point(300, this.Height / 3);
+
+
+            // Start button
+            Button startButton = new Button();
+            startButton.Text = "START";
+            startButton.Size = new Size(200, 60);
+            startButton.Location = new Point(
+                (this.Width - startButton.Width) / 2,
+                welcomeLabel.Bottom + 50);
+            StyleWelcomeButton(startButton);
+            startButton.Click += (sender, e) =>
+            {
+                this.Controls.Remove(welcomePanel);
+                InitializeDashboardUI();
+            };
+            welcomePanel.Controls.Add(startButton);
+
+            // Center elements when resizing
+            welcomePanel.Resize += (sender, e) =>
+            {
+                welcomeLabel.Location = new Point(
+                    (welcomePanel.Width - welcomeLabel.Width) / 2,
+                    welcomePanel.Height / 3);
+                startButton.Location = new Point(
+                    (welcomePanel.Width - startButton.Width) / 2,
+                    welcomeLabel.Bottom + 50);
+            };
+        }
+
+        private void StyleWelcomeButton(Button button)
+        {
+            button.FlatStyle = FlatStyle.Flat;
+            button.FlatAppearance.BorderSize = 0;
+            button.BackColor = secondaryColor;
+            button.ForeColor = Color.White;
+            button.Font = new Font("Segoe UI Semibold", 14, FontStyle.Bold);
+            button.Cursor = Cursors.Hand;
+
+            // Rounded corners
+            GraphicsPath path = new GraphicsPath();
+            int radius = 15;
+            path.AddArc(0, 0, radius, radius, 180, 90);
+            path.AddArc(button.Width - radius, 0, radius, radius, 270, 90);
+            path.AddArc(button.Width - radius, button.Height - radius, radius, radius, 0, 90);
+            path.AddArc(0, button.Height - radius, radius, radius, 90, 90);
+            path.CloseFigure();
+            button.Region = new Region(path);
+        }
+
+        private void InitializeDashboardUI()
+        {
             this.BackColor = lightBgColor;
             this.Font = new Font("Segoe UI", 9);
 
@@ -47,6 +119,7 @@ namespace TaskManagerUI
             mainPanel.Padding = new Padding(25);
             this.Controls.Add(mainPanel);
 
+            // Header label
             Label headerLabel = new Label();
             headerLabel.Text = "TASK MANAGER";
             headerLabel.Font = new Font("Segoe UI Semibold", 18, FontStyle.Bold);
@@ -55,6 +128,7 @@ namespace TaskManagerUI
             headerLabel.ForeColor = primaryColor;
             mainPanel.Controls.Add(headerLabel);
 
+            // Quick actions panel
             Panel quickActionsPanel = new Panel();
             quickActionsPanel.BackColor = Color.White;
             quickActionsPanel.Padding = new Padding(10);
@@ -80,6 +154,7 @@ namespace TaskManagerUI
             addTaskButton.Click += (sender, e) => ShowAddTaskDialog();
             quickActionsPanel.Controls.Add(addTaskButton);
 
+            // Search panel
             Panel searchPanel = new Panel();
             searchPanel.BackColor = Color.White;
             searchPanel.Location = new Point(25, 150);
@@ -88,6 +163,7 @@ namespace TaskManagerUI
             searchPanel.BorderStyle = BorderStyle.None;
             mainPanel.Controls.Add(searchPanel);
 
+            // Search box
             txtSearch = new TextBox();
             txtSearch.Location = new Point(10, 10);
             txtSearch.Width = 250;
@@ -130,6 +206,7 @@ namespace TaskManagerUI
             btnReset.Click += BtnReset_Click;
             searchPanel.Controls.Add(btnReset);
 
+            // Tasks table
             tasksDataGridView = new DataGridView();
             tasksDataGridView.Location = new Point(25, 210);
             tasksDataGridView.Size = new Size(mainPanel.Width - 50, mainPanel.Height - 240);
@@ -149,20 +226,24 @@ namespace TaskManagerUI
             tasksDataGridView.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
             tasksDataGridView.GridColor = Color.FromArgb(224, 224, 224);
 
+            // Add columns
             tasksDataGridView.Columns.Add("Person", "PERSON");
             tasksDataGridView.Columns.Add("Task", "TASK DESCRIPTION");
             tasksDataGridView.Columns.Add("Priority", "PRIORITY");
             tasksDataGridView.Columns.Add("Important", "IMPORTANT");
             tasksDataGridView.Columns.Add("Status", "STATUS");
 
+            // Set column widths
             tasksDataGridView.Columns["Person"].Width = 150;
             tasksDataGridView.Columns["Priority"].Width = 100;
             tasksDataGridView.Columns["Important"].Width = 80;
             tasksDataGridView.Columns["Status"].Width = 100;
 
+            // Set text alignment
             tasksDataGridView.Columns["Status"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             tasksDataGridView.Columns["Important"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
+            // Complete button column
             DataGridViewButtonColumn completeButtonColumn = new DataGridViewButtonColumn();
             completeButtonColumn.Name = "Complete";
             completeButtonColumn.Text = "Complete";
@@ -172,6 +253,7 @@ namespace TaskManagerUI
             completeButtonColumn.DefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
             tasksDataGridView.Columns.Add(completeButtonColumn);
 
+            // Edit button column
             DataGridViewButtonColumn editButtonColumn = new DataGridViewButtonColumn();
             editButtonColumn.Name = "Edit";
             editButtonColumn.Text = "Edit";
@@ -335,7 +417,6 @@ namespace TaskManagerUI
             dialog.BackColor = lightBgColor;
             dialog.Padding = new Padding(20);
 
-            
             Label personLabel = new Label();
             personLabel.Text = "Person:";
             personLabel.Location = new Point(30, 20);
@@ -351,7 +432,6 @@ namespace TaskManagerUI
             personTextBox.BackColor = Color.WhiteSmoke;
             dialog.Controls.Add(personTextBox);
 
-            
             Label taskLabel = new Label();
             taskLabel.Text = "Task Description:";
             taskLabel.Location = new Point(30, 85);
@@ -366,7 +446,6 @@ namespace TaskManagerUI
             taskTextBox.BorderStyle = BorderStyle.FixedSingle;
             dialog.Controls.Add(taskTextBox);
 
-            
             Label priorityLabel = new Label();
             priorityLabel.Text = "Priority:";
             priorityLabel.Location = new Point(30, 150);
@@ -397,7 +476,6 @@ namespace TaskManagerUI
             rbLow.Checked = task.Priority == "Low";
             dialog.Controls.Add(rbLow);
 
-            
             CheckBox chkImportant = new CheckBox();
             chkImportant.Text = "Important Task";
             chkImportant.Location = new Point(30, 205);
@@ -406,7 +484,6 @@ namespace TaskManagerUI
             chkImportant.Checked = task.IsImportant;
             dialog.Controls.Add(chkImportant);
 
-            
             CheckBox chkCompleted = new CheckBox();
             chkCompleted.Text = "Completed";
             chkCompleted.Location = new Point(30, 235);
@@ -415,7 +492,6 @@ namespace TaskManagerUI
             chkCompleted.Checked = task.EsteFinalizat;
             dialog.Controls.Add(chkCompleted);
 
-            
             Button updateButton = new Button();
             updateButton.Text = "Update Task";
             updateButton.Size = new Size(120, 35);
@@ -425,7 +501,6 @@ namespace TaskManagerUI
             {
                 if (!string.IsNullOrWhiteSpace(taskTextBox.Text))
                 {
-                    
                     task.Descriere = taskTextBox.Text.Trim();
                     task.Priority = rbHigh.Checked ? "High" : rbMedium.Checked ? "Medium" : "Low";
                     task.IsImportant = chkImportant.Checked;
@@ -442,7 +517,6 @@ namespace TaskManagerUI
             };
             dialog.Controls.Add(updateButton);
 
-            
             Button deleteButton = new Button();
             deleteButton.Text = "Delete Task";
             deleteButton.Size = new Size(120, 35);
@@ -453,12 +527,11 @@ namespace TaskManagerUI
                 if (MessageBox.Show("Are you sure you want to delete this task?", "Confirm Delete",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                 {
-                    person.StergeTask(task.Descriere); 
+                    person.StergeTask(task.Descriere);
                     dialog.Close();
                     RefreshTasksGrid();
                 }
             };
-
             dialog.Controls.Add(deleteButton);
 
             dialog.ShowDialog(this);
@@ -467,6 +540,7 @@ namespace TaskManagerUI
         private void RefreshTasksGrid()
         {
             tasksDataGridView.Rows.Clear();
+
             foreach (var person in adminClienti.GetPersoane())
             {
                 foreach (var task in person.GetTaskuri())

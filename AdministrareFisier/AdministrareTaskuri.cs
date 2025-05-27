@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using LibrarieModele;
-    
+
 
     public class AdministrareTaskuri
     {
@@ -58,7 +58,7 @@
                     foreach (var line in File.ReadAllLines(numeFisierTaskuri))
                     {
                         var parts = line.Split('|');
-                        if (parts.Length >= 3) 
+                        if (parts.Length >= 3)
                         {
                             var persoana = adminClienti.CautaPersoana(parts[0]);
                             if (persoana != null)
@@ -66,8 +66,8 @@
                                 var task = new Task(parts[1])
                                 {
                                     EsteFinalizat = bool.Parse(parts[2]),
-                                    Priority = parts.Length > 3 ? parts[3] : "Medium", 
-                                    IsImportant = parts.Length > 4 ? bool.Parse(parts[4]) : false 
+                                    Priority = parts.Length > 3 ? parts[3] : "Medium",
+                                    IsImportant = parts.Length > 4 ? bool.Parse(parts[4]) : false
                                 };
                                 persoana.AdaugaTask(task);
                             }
