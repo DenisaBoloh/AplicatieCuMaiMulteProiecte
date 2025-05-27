@@ -31,85 +31,17 @@ namespace TaskManagerUI
             InitializeComponent();
             adminClienti = new AdministrareClienti();
             adminTaskuri = new AdministrareTaskuri(adminClienti);
-            InitializeWelcomeScreen();
-        }
-
-        private void InitializeWelcomeScreen()
-        {
-            this.Text = "Task Manager";
-            this.Size = new Size(1100, 700);
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            this.MaximizeBox = false;
-
-            
-            welcomePanel = new Panel();
-            welcomePanel.Dock = DockStyle.Fill;
-            welcomePanel.BackColor = primaryColor;
-            this.Controls.Add(welcomePanel);
-
-            // Welcome label
-            Label welcomeLabel = new Label();
-            welcomeLabel.Text = "WELCOME TO TASK MANAGER";
-            welcomeLabel.Font = new Font("Segoe UI", 24, FontStyle.Bold);
-            welcomeLabel.ForeColor = Color.White;
-            welcomeLabel.AutoSize = true;
-            welcomeLabel.Location = new Point(
-                (this.Width - welcomeLabel.Width) / 2,
-                this.Height / 3);
-            welcomePanel.Controls.Add(welcomeLabel);
-            welcomeLabel.Location = new Point(300, this.Height / 3);
-
-
-            // Start button
-            Button startButton = new Button();
-            startButton.Text = "START";
-            startButton.Size = new Size(200, 60);
-            startButton.Location = new Point(
-                (this.Width - startButton.Width) / 2,
-                welcomeLabel.Bottom + 50);
-            StyleWelcomeButton(startButton);
-            startButton.Click += (sender, e) =>
-            {
-                this.Controls.Remove(welcomePanel);
-                InitializeDashboardUI();
-            };
-            welcomePanel.Controls.Add(startButton);
-
-            // Center elements when resizing
-            welcomePanel.Resize += (sender, e) =>
-            {
-                welcomeLabel.Location = new Point(
-                    (welcomePanel.Width - welcomeLabel.Width) / 2,
-                    welcomePanel.Height / 3);
-                startButton.Location = new Point(
-                    (welcomePanel.Width - startButton.Width) / 2,
-                    welcomeLabel.Bottom + 50);
-            };
-        }
-
-        private void StyleWelcomeButton(Button button)
-        {
-            button.FlatStyle = FlatStyle.Flat;
-            button.FlatAppearance.BorderSize = 0;
-            button.BackColor = secondaryColor;
-            button.ForeColor = Color.White;
-            button.Font = new Font("Segoe UI Semibold", 14, FontStyle.Bold);
-            button.Cursor = Cursors.Hand;
-
-            // Rounded corners
-            GraphicsPath path = new GraphicsPath();
-            int radius = 15;
-            path.AddArc(0, 0, radius, radius, 180, 90);
-            path.AddArc(button.Width - radius, 0, radius, radius, 270, 90);
-            path.AddArc(button.Width - radius, button.Height - radius, radius, radius, 0, 90);
-            path.AddArc(0, button.Height - radius, radius, radius, 90, 90);
-            path.CloseFigure();
-            button.Region = new Region(path);
+            this.Size = new Size(900, 700);
         }
 
         private void InitializeDashboardUI()
         {
+            buttonStart.Click += (sender, e) =>
+            {
+                this.Controls.Remove(panelWelcome);
+                InitializeDashboardUI();
+            };
+
             this.BackColor = lightBgColor;
             this.Font = new Font("Segoe UI", 9);
 
@@ -608,13 +540,22 @@ namespace TaskManagerUI
                 {
                     foreach (var task in person.GetTaskuri())
                     {
-                        tasksDataGridView.Rows.Add(
+                        int rowIndex = tasksDataGridView.Rows.Add(
                             person.Nume,
                             task.Descriere,
                             task.Priority,
                             task.IsImportant ? "★" : "",
                             task.EsteFinalizat ? "Completed" : "Pending"
                         );
+
+
+                        DataGridViewRow row = tasksDataGridView.Rows[rowIndex];
+                        if (task.Priority == "High")
+                            row.DefaultCellStyle.BackColor = highPriorityColor;
+                        else if (task.Priority == "Medium")
+                            row.DefaultCellStyle.BackColor = mediumPriorityColor;
+                        else
+                            row.DefaultCellStyle.BackColor = lowPriorityColor;
                     }
                 }
             }
@@ -734,5 +675,13 @@ namespace TaskManagerUI
                 }
             }
         }
+
+        private void buttonStart_Click(object sender, EventArgs e)
+        {
+            panelWelcome.Visible = false;
+            InitializeDashboardUI();
+        }
+
+
     }
 }
