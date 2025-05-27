@@ -24,8 +24,8 @@ namespace TaskManagerUI
         private void InitializeComponent()
         {
             this.panelWelcome = new System.Windows.Forms.Panel();
-            this.labelWelcome = new System.Windows.Forms.Label();
             this.buttonStart = new System.Windows.Forms.Button();
+            this.labelWelcome = new System.Windows.Forms.Label();
             this.panelWelcome.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -39,17 +39,7 @@ namespace TaskManagerUI
             this.panelWelcome.Name = "panelWelcome";
             this.panelWelcome.Size = new System.Drawing.Size(1566, 935);
             this.panelWelcome.TabIndex = 0;
-            // 
-            // labelWelcome
-            // 
-            this.labelWelcome.AutoSize = true;
-            this.labelWelcome.Font = new System.Drawing.Font("Segoe UI", 20.1F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelWelcome.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.labelWelcome.Location = new System.Drawing.Point(664, 469);
-            this.labelWelcome.Name = "labelWelcome";
-            this.labelWelcome.Size = new System.Drawing.Size(1007, 89);
-            this.labelWelcome.TabIndex = 0;
-            this.labelWelcome.Text = "WELCOME TO TASK MANAGER";
+            
             // 
             // buttonStart
             // 
@@ -63,6 +53,18 @@ namespace TaskManagerUI
             this.buttonStart.TabIndex = 1;
             this.buttonStart.Text = "START";
             this.buttonStart.UseVisualStyleBackColor = false;
+            this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
+            // 
+            // labelWelcome
+            // 
+            this.labelWelcome.AutoSize = true;
+            this.labelWelcome.Font = new System.Drawing.Font("Segoe UI", 20.1F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelWelcome.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.labelWelcome.Location = new System.Drawing.Point(664, 469);
+            this.labelWelcome.Name = "labelWelcome";
+            this.labelWelcome.Size = new System.Drawing.Size(1007, 89);
+            this.labelWelcome.TabIndex = 0;
+            this.labelWelcome.Text = "WELCOME TO TASK MANAGER";
             // 
             // Form1
             // 

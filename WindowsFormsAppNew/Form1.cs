@@ -617,11 +617,21 @@ namespace TaskManagerUI
             addButton.Size = new Size(120, 35);
             addButton.Location = new Point(160, 100);
             StyleButton(addButton, primaryColor);
+
+            
             addButton.Click += (sender, e) =>
             {
-                if (!string.IsNullOrWhiteSpace(nameTextBox.Text) && nameTextBox.Text != "Enter person name...")
+                string enteredName = nameTextBox.Text.Trim();
+
+                if (!string.IsNullOrWhiteSpace(enteredName) && enteredName != "Enter person name...")
                 {
-                    adminClienti.AdaugaPersoana(nameTextBox.Text.Trim());
+                    if (adminClienti.CautaPersoana(enteredName) != null)
+                    {
+                        MessageBox.Show("A person with this name already exists!", "Duplicate Person", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    adminClienti.AdaugaPersoana(enteredName);
                     dialog.Close();
                     RefreshTasksGrid();
                 }
@@ -630,10 +640,11 @@ namespace TaskManagerUI
                     MessageBox.Show("Please enter a valid name!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             };
-            dialog.Controls.Add(addButton);
 
+            dialog.Controls.Add(addButton);
             dialog.ShowDialog(this);
         }
+
 
         private void TasksDataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -682,6 +693,6 @@ namespace TaskManagerUI
             InitializeDashboardUI();
         }
 
-
+  
     }
 }
